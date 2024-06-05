@@ -1,35 +1,31 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CubeSpawner : MonoBehaviour
 {
     [SerializeField] private int _minCount;
     [SerializeField] private int _maxCount;
     [SerializeField] private float _reduceSize;
-    [SerializeField] private float _explosionForce;
-    [SerializeField] private Cube _cube;
+    [SerializeField] private float _reduceChance;
 
-    private void Start()
+    public List<Cube> SpawnCubes(Cube cube)
     {
-        _cube.Clicked += SpawnCubes;
-    }
-
-    public void SpawnCubes(Cube cube)
-    {
-        cube.Clicked -= SpawnCubes;
+        List<Cube> cubesToChange = new List<Cube>();
 
         int random = Random.Range(_minCount, _maxCount);
+
+        cube.SetSplitChance(cube.SplitChance * _reduceChance);
 
         for (int i = 0; i < random; i++)
         {
             Cube cubeToInstance = Instantiate(cube, cube.transform.position, Random.rotation);
 
-            cubeToInstance.Clicked += SpawnCubes;
-
             cubeToInstance.transform.localScale *= _reduceSize;
 
-            cubeToInstance.SetMaterial(new Color(Random.value, Random.value, Random.value));
-
-            cubeToInstance.AddForce(_explosionForce);
+            cubesToChange.Add(cubeToInstance);
         }
+
+        return cubesToChange;
     }
 }
